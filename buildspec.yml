@@ -1,10 +1,11 @@
-AWSTemplateFormatVersion: "2010-09-09"
+
+AWSTemplateFormatVersion: '2010-09-09'
 Resources:
   MyLambdaRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -14,13 +15,17 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       Policies:
-        - PolicyName: root
+        - PolicyName: lambda-s3-access
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
-                Action: 's3:*'
-                Resource: '*'
+                Action:
+                  - 's3:GetObject'
+                  - 's3:ListBucket'
+                Resource:
+                  - !Sub 'arn:aws:s3:::mybucketforlambda12'  # Replace with your bucket name
+                  - !Sub 'arn:aws:s3:::mybucketforlambda12/*'  # Replace with your bucket name and prefix
   
   MyLambdaFunction:
     Type: AWS::Lambda::Function
@@ -32,8 +37,62 @@ Resources:
         S3Bucket: mybucketforlambda12
         S3Key: lambda.zip
       Tags:
-        - Key: Name 
+        - Key: Name
           Value: MyLambdaFunction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# AWSTemplateFormatVersion: "2010-09-09"
+# Resources:
+#   MyLambdaRole:
+#     Type: 'AWS::IAM::Role'
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           - Effect: Allow
+#             Principal:
+#               Service:
+#                 - lambda.amazonaws.com
+#             Action:
+#               - 'sts:AssumeRole'
+#       Path: /
+#       Policies:
+#         - PolicyName: root
+#           PolicyDocument:
+#             Version: "2012-10-17"
+#             Statement:
+#               - Effect: Allow
+#                 Action: 's3:*'
+#                 Resource: '*'
+  
+#   MyLambdaFunction:
+#     Type: AWS::Lambda::Function
+#     Properties:
+#       Role: !GetAtt MyLambdaRole.Arn
+#       Runtime: python3.9
+#       Handler: lambda.lambda_handler
+#       Code:
+#         S3Bucket: mybucketforlambda12
+#         S3Key: lambda.zip
+#       Tags:
+#         - Key: Name 
+#           Value: MyLambdaFunction
 
 
 
